@@ -7,18 +7,22 @@ import numpy as np
 import util
 
 class Strategy:
-    def __init__(self, p, N = None):
+    def __init__(self, p, N = None, complete_info = True):
+        # N is discarded if p is not None
         if p is None:
             if N is None:
                 raise ValueError()
             self.p = np.ones(N) / float(N)
-
-    def set_simulation(self, simulation):
-        self.simulation = simulation
+        else:
+            self.p = p
+        self.complete_info = complete_info
+        # history of strategies
+        self.ps = []
 
     def sample(self):
+        # in all strategies used here, we sample an action by playing randomly
         return util.rand_weighted(self.p)
 
-    def update(self):
+    def update(self, loss):
+        # to define in children classes
         raise NotImplementedError()
-        

@@ -6,6 +6,15 @@
 import numpy as np
 import util
 
+# decorator for update function 
+def update(f):
+    def inner(self, loss):
+        result = f(self, loss)
+        self.ps.append(self.p)
+        return result
+    return inner
+
+
 class Strategy:
     def __init__(self, p, N = None, complete_info = True):
         # N is discarded if p is not None
@@ -17,12 +26,13 @@ class Strategy:
             self.p = p
         self.complete_info = complete_info
         # history of strategies
-        self.ps = []
+        self.ps = [ self.p ]
 
     def sample(self):
         # in all strategies used here, we sample an action by playing randomly
         return util.rand_weighted(self.p)
 
+    @update
     def update(self, loss):
         # to define in children classes
         raise NotImplementedError()

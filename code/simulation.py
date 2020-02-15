@@ -50,7 +50,6 @@ class Simulation:
 
     def run(self):
         # alternatively run player and opponent + update their strategies
-        print(self.actors['player'].play())
         for t in range(self.T):
             self.actions['player'].append(self.actors['player'].play())
             self.actions['opponent'].append(self.actors['opponent'].play())

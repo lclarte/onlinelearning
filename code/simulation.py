@@ -17,9 +17,14 @@ class Simulation:
         # les deux matrices doivent donc etre specifiees)
 
         self.loss_matrices = {'player' : pL, 'opponent' : oL}
+
         self.actors = {'player' : None, 'opponent' : None}
         self.actions = {'player' : [], 'opponent' : []}
+        # losses = depend on (in)complete information
         self.losses = {'player' : [], 'opponent' : []}
+        # true loss = loss incured by the player + action
+        self.bandit_losses = {'player' : [], 'opponent' : []}
+        self.comp_losses = {'player' : [], 'opponent' : []}
 
     # set player and opponent
 
@@ -33,20 +38,20 @@ class Simulation:
 
     # "bandit" information : only get loss of the two actions taken
 
-    def get_bandit_loss(self, actor = 'player'):
+    def get_bandit_loss(self, _actor = 'player'):
         # return L(I_t, J_t)
         it, jt = self.actions['player'][-1], self.actions['opponent'][-1]   
-        return self.loss_matrices[actor][it, jt]
+        return self.loss_matrices[_actor][it, jt]
 
     # complete information : get the losses of all actions given other player's action
 
-    def get_complete_loss(self, actor = 'player'):
+    def get_complete_loss(self, _actor = 'player'):
         # return L[:, J_t] if player and L[I_t, :] if opponent
         it, jt = self.actions['player'][-1], self.actions['opponent'][-1]
-        if actor == 'player':
-            return self.loss_matrices[actor][:, jt]
-        elif actor == 'opponent':
-            return self.loss_matrices[actor][it, :] 
+        if _actor == 'player':
+            return self.loss_matrices[_actor][:, jt]
+        elif _actor == 'opponent':
+            return self.loss_matrices[_actor][it, :] 
 
     def run(self):
         # alternatively run player and opponent + update their strategies
@@ -62,9 +67,13 @@ class Simulation:
         for _actor in ['player', 'opponent']:
             actor = self.actors[_actor]
             loss = None
+
             if actor.complete_info:
                 loss = self.get_complete_loss(_actor) 
             else:
                 loss = self.get_bandit_loss(_actor)
             self.losses[_actor].append(loss)
+            
+            self.bandit_losses[_actor].append(self.get_bandit_loss(_actor))
+            self.comp_losses[_actor].append(self.get_complete_loss(_actor))
             actor.update(loss)

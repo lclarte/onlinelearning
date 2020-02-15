@@ -6,8 +6,8 @@ import util
 # question 3 : Exponentially Weighted Average
 class EWA(strategy.Strategy):
 	
-	def __init__(self, N : int, eta : float):
-		super(). __init__(p = None, N=3, complete_info=True)
+	def __init__(self, p : np.ndarray, eta : float):
+		super(). __init__(p, complete_info=True)
 		self.eta = eta
 		
 	@strategy.update

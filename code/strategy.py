@@ -16,17 +16,12 @@ def update(f):
 
 
 class Strategy:
-    def __init__(self, p, N = None, complete_info = True):
-        # N is discarded if p is not None
-        if p is None:
-            if N is None:
-                raise ValueError()
-            self.p = np.ones(N) / float(N)
-        else:
-            self.p = p
+    def __init__(self, p, complete_info = True):
+        self.p = np.copy(p)
+        # remember of initial strategy 
         self.complete_info = complete_info
-        # history of strategies
-        self.ps = [ self.p ]
+        # history of strategies 
+        self.ps = [self.p]
 
     def sample(self):
         # in all strategies used here, we sample an action by playing randomly

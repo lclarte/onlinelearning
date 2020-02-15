@@ -17,6 +17,7 @@ def EWA_update(p : np.ndarray, l : np.ndarray, eta : float):
 get_average_loss = lambda ls : np.cumsum(ls) / np.arange(1, len(ls) + 1)
 
 # min_i {sum_t L(i, j_t)}
+# js : opponent actions during the simulation
 get_min_loss = lambda L, js : np.min(np.sum(L.transpose()[js], axis=0))
 
 # returns regret at final time R_T given list of L(i_t, j_t)
@@ -24,5 +25,5 @@ def get_regret(L, ls, js, T = -1):
 	return np.sum(ls[:T]) - get_min_loss(L, js[:T])
 
 # returns list of cumulative regret for 1 SIMULATION
-def get_cumulative_regret(L, ls, js):
+def get_cumulative_regret(L : np.ndarray, ls : np.ndarray, js : list):
 	return [0] + [get_regret(L, ls, js, T) for T in range(1, len(ls))]

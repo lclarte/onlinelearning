@@ -3,7 +3,9 @@ import matplotlib.pyplot as plt
 
 def pltdecorator(function):
 	def inner(*args, **kwargs):
-		retour = function(*args, **kwargs)
+		retour = function(*args)
+		if 'title' in kwargs:
+			plt.title(kwargs['title'])
 		plt.tight_layout()
 		plt.show()
 		return retour

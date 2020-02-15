@@ -85,8 +85,17 @@ When the adversary uses \texttt{EWA} like the player, we observe that the averag
 	\label{fig:question4b}
 \end{figure}
 
-\paragraph*{Bandit feedback} We now assume that the player doesn't have access to L but only the incured loss $L(i_t, j_t)$. We implement the algorithm \texttt{Exp3} where at each time t, the action $i_t$ is selected with a probability
-$$
+\paragraph*{Bandit feedback} We now assume that the player doesn't have access to L but only the incured loss $L(i_t, j_t)$. We will here implement the algorithm \texttt{Exp3} where at each time t, the action $i_t$ is selected with a probability
+\begin{equation}
 \mathbb{P}(i_t = i) = \frac{\exp{(- \eta \hat{l_t}(i))}}{\sum_j \exp{(- \eta \hat{l_t}(j))}}
-$$
-where $\hat{l_t}(i)$ is the \textit{estimated loss} of the action i, i.e the average loss incured by the player when the action i was selected. 
+\label{exp3equation}
+\end{equation}
+where $\hat{l_t}(i)$ is the \textit{estimated loss} of the action i, i.e the average loss incured by the player when the action i was selected.
+
+\question{5.(a)} To implement the function \texttt{estimated\_loss}, we maintain a vector $C \in \mathbb{N}^M$ where at each time, $C_i$ is the number of times the action $i$ has been played. We also maintain the vector $S \in \mathbb{R}^M$ where $S_i = \sum_i L(i_t, j_t) \mathbf{1}(i_t = i)$ is the sum of the losses occured by the player every time they chose the action $i$.
+The function \texttt{estimated\_loss(i)} simply returns $S_i / C_i$.
+
+ % TODO :redaction explication de l'algorithme
+\question{5. (b)} 
+
+\question{6.} In this question, the player uses \texttt{Exp3} with a learning rate $\eta = 1.0$ with a fixed adversary.

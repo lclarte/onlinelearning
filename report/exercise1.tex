@@ -32,45 +32,42 @@ cumulative array c such that $c_i > x$. It is easy to show that for all j, $i = 
 The optimal value of p that satisifies the constraint $p \in \Delta_3$ and minimizes the above expression is $x = 0, y = 1, z = 0$ which is what we wanted. 
 
 \begin{figure}
-	\includegraphics[width=\textwidth]{images/question3b}
-	\caption{Plot of the player's stragegy p with \texttt{EWA}, when opponent has a fixed strategy (0.5, 0.25, 0.25)}
-	\label{fig:question3b}
+	
+	\sidebyside{images/question3b}
+	\qquad
+	\sidebyside{images/question3c}
+	
+	\caption{Left : plot of the player's stragegy p with \texttt{EWA}, when opponent has a fixed strategy (0.5, 0.25, 0.25). Right : plot of the average loss as a function of t for 10 simulations of the game with \texttt{EWA}}
+	\label{fig:question3b3c}
 \end{figure}
 
 \question{3. (c)} We plot the average loss $\bar{l}_t = \frac{1}{t} \sum_{1 \leqslant s \leqslant t} l(i_s, j_s)$ as a function of t, and obtain the figure (\ref{fig:question3c}). The figure shows 10 different runs of the simulation.  
 
-\begin{figure}
-	\includegraphics[width=\textwidth]{images/question3c}
-	\caption{Plot of the average loss as a function of t for 10 simulations of the game with \texttt{EWA}}
-	\label{fig:question3c}
-\end{figure}
-
-% TODO : question 3.(d) redaction
+% TODO : question 3.(d) redaction + explicatoin theorique
 \question{3. (d)} Here, the cumulative regret is defined by 
 \begin{equation}
 	R_t = \sum_{s = 1}^t L(i_s, j_s) - \underset{i}{\min} \sum_{s \leqslant t}L(i, j_s)
-\end{equation}. Figure (\ref{fig:fig:question3d})
+\end{equation}Figure (\ref{fig:question3d}) shows the cumulative regret for 10 trials with T = 100. We observe experimentally that for each trial, after a certain time the cumulative regret is constant. 
 
 \begin{figure}
-	\includegraphics[width=\textwidth]{images/question3d}
-	\caption{Cumulative regret $R_t$ for 10 simulations}
-	\label{fig:question3d}
+	\sidebyside{images/question3d}
+	\qquad
+	\sidebyside{images/question3e}
+	\caption{Left : Cumulative regret .Right : average, minimum and maximum of the average loss $\bar{l}_t$ for n = 10 simulation trials. The n average losses are plotted in grey.}
+\label{fig:question3d3e}
 \end{figure}
 
 % TODO : question 3(e) : justification theorique
 \question{3. (e)} To estimate the stability, n = 10 simulations are executed, and we plot in figure (\ref{fig:question3e}) the n average losses as well as the minimum, maximum and mean losses. At first glance, the \texttt{EWA} seems to be stable. Indeed, the maximum and minimum both seem to converge towards the value $l_\infty = -0.25$.
 
-\begin{figure}
-	\includegraphics[width=\textwidth]{images/question3e}
-	\caption{Average, minimum and maximum of the average loss $\bar{l}_t$. The n average losses are plotted in grey.}
-	\label{fig:question3e}
-\end{figure}
-
 % TODO : question 3(f) comparaison des learning rates en pratique
 \question{3. (f)}
 In theory, the best learning rate $\eta$ with \texttt{EWA} is $\eta_{\text{EWA}} = \sqrt{2 ln(K) / T}$ with $K = 3$ here and $T = 100$, so we obtain $\eta_{\text{EWA}} \simeq 0.15$. We see that in practice, the best learning rate is not necessarily equal to $\eta_{\text{EWA}}$. 
 
-\question{4. (a)} \textit{Simulation against an adaptive adversary}
+\question{4.} \textit{Simulation against an adaptive adversary}
+In this question, the player still uses \texttt{EWA} with a learning rate $\eta = 1.0$ while the opponent uses a learning rate $\eta = 0.05$
+
+\question{4.(a)}
 When the adversary uses \texttt{EWA} like the player, we observe that the average loss seems to converge towards 0 which is the value of the game.
 
 \begin{figure}
@@ -81,6 +78,12 @@ When the adversary uses \texttt{EWA} like the player, we observe that the averag
 
 % TODO : question 4(b). Comprendre pourquoi la distance ne converge pas vraiment vers 0
 \question{4. (b)}
+\begin{figure}[h!]
+	\sidebyside{images/question4b1.png}
+	\qquad
+	\sidebyside{images/question4b2.png}
+	\label{fig:question4b}
+\end{figure}
 
 \paragraph*{Bandit feedback} We now assume that the player doesn't have access to L but only the incured loss $L(i_t, j_t)$. We implement the algorithm \texttt{Exp3} where at each time t, the action $i_t$ is selected with a probability
 $$

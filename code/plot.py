@@ -1,6 +1,15 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+def pltdecorator(function):
+	def inner(*args, **kwargs):
+		retour = function(*args, **kwargs)
+		plt.tight_layout()
+		plt.show()
+		return retour
+	return inner
+
+@pltdecorator
 def plot_p(_ps):
 	"""
 	plot the history of the strategy
@@ -14,8 +23,8 @@ def plot_p(_ps):
 	plt.title('History of weights as a function of t')
 	plt.xlabel('t')
 	plt.ylabel('weights')
-	plt.show()
 
+@pltdecorator
 def plot_average_loss(average_loss):
 	"""
 	plot the average loss w/ K simulation trials
@@ -27,8 +36,8 @@ def plot_average_loss(average_loss):
 	plt.title('Average loss as a function of t')
 	plt.xlabel('t')
 	plt.ylabel('$\\bar{l_t}$')
-	plt.show()
 
+@pltdecorator
 def plot_cumulative_regret(cumulative_regrets):
 	"""
 	plot cumumative regret w/ K simulation trials
@@ -39,8 +48,8 @@ def plot_cumulative_regret(cumulative_regrets):
 	plt.title('Cumulative regret')
 	plt.xlabel('t')
 	plt.ylabel('$\\bar{R_t}$')
-	plt.show()
 
+@pltdecorator
 def plot_min_max_avg_losses(average_loss):
 	"""
 	plot various stats on cumulative average losses w/ K trials 
@@ -59,15 +68,16 @@ def plot_min_max_avg_losses(average_loss):
 	plt.xlabel('t')
 	plt.ylabel('$\\bar{l_t}$')
 	plt.legend()
-	plt.show()
 
+@pltdecorator
 def plot_regret_eta(etas, regrets):
 	"""
 	Compare the regret at time T w/ different learning rates
 	"""
 	plt.plot(etas, regrets)
-	plt.show()
+	
 
+@pltdecorator
 def plot_average_p_distance(ps, p_star):
 	"""
 	plots the distance between the average weights p at time t 
@@ -77,4 +87,9 @@ def plot_average_p_distance(ps, p_star):
 	# works as expected
 	average_ps = np.cumsum(ps, axis=0) / np.arange(1, len(ps) + 1 )[:, None]
 	distance = [np.linalg.norm(average_ps[i] - p_star) for i in range(len(average_ps))]
-	plt.plot(distance) ; plt.show()
+	plt.plot(distance)
+
+	p_star_print = np.round(p_star, 2)
+	plt.title("Distance between average weights $\\bar{p}_t$ and " + str(p_star_print))
+	plt.xlabel("t")
+	plt.ylabel("$ \| \\bar{p}_t - " + str(p_star_print) + "\|_2$")

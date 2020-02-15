@@ -6,7 +6,7 @@ import numpy as np
 from simulation import *
 from actor import *
 from strategy import *
-from visualization import *
+from plot import *
 from ewa import EWA
 from exp3 import Exp3
 
@@ -27,7 +27,7 @@ def main():
     main_simulation.run()
 
     player_ps = main_simulation.actors['player'].strategy.ps
-    plot_weights_history(player_ps)
+    plot_p(player_ps)
 
 if __name__ == '__main__':
     main()

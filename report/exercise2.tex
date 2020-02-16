@@ -1,0 +1,57 @@
+\exercise{Part 2 - Theory - Sleeping experts}
+
+\question{11. (a)} Let us note $f(x) := log(1 + x)$ and $g(x) := x - x^2$. Let us define 
+\begin{equation*}
+\Delta(x) = f(x) - g(x)
+\end{equation*} 
+We want to prove $\Delta(x) \geqslant 0$ for $x \geqslant - \frac{1}{2}$. Note that we have
+\begin{equation*}
+	\forall x, \Delta'(x) = \frac{1}{1 + x} - 1 + 2x
+\end{equation*}
+It is easy to show that $\Delta'(x) < 0$ if and only if $-\frac{1}{2} \leqslant x \leqslant 0$. As a consequence, $\Delta$ is a non-increasing function on $[-0.5, 0]$ and a non-decreasing function on $[0, \infty]$. Since $\Delta(0) = 0$, this shows that $\Delta \geqslant 0$ when $x \geqslant -0.5$.
+
+\question{11. (b)} Let $k \in \mathcal{X}$. Because the weights $w_t(j)$ are all positive, we can write
+\begin{align*}
+	\log{W_{T+1}} &= \log{\sum_j w_{T+1}(j)} \geqslant \log { w_{T+1}(k)} \\
+	&= \sum_{t=1}^T \log{\left( 1 + \eta(k)(p_t \cdot{} l_t - l_t(k))\right)}
+\end{align*}
+Because the loss is between 0 and 1, $p_t \cdot{} l_t - l_t(k) \in [-1, 1]$ and because $\eta(k) \leqslant 0.5$, we deduce that $1 + \eta(k)(p_t \cdot{} l_t - l_t(k)) \geqslant 0.5$ and we can apply the previous question. From there, we deduce the result 
+\begin{equation*}
+	\log{W_{T+1}} \geqslant \eta(k) \sum_t (p_t \cdot l_t - l_t(k)) - \eta(k)^2 \sum_t (p_t \cdot l_t - l_t(k))^2
+\end{equation*}
+
+\question{11. (c)} Consider $k \in \mathcal{X}$. By definition of $w_t$, we have
+\begin{align*}
+	w_{t+1}(k) &= w_t(k) \times \left( 1 + \eta(k) ( p_t \cdot l_t - l_t(k))  \right) \\
+	w_{t+1}(k) - w_t(k) & = w_t(k) \times \eta(k)  ( p_t \cdot l_t - l_t(k)) 
+\end{align*}
+Thus, summing over all k, we have
+\begin{align*}
+	W_{t+1} - W_t = \sum_k w_t(k) \times \eta(k) ( p_t \cdot l_t - l_t(k))
+\end{align*}
+However, developping $p_t = \frac{\sum_k \eta(k)w_t(k)}{\sum_l \eta(k)w_t(k)}$, we have  
+\begin{align*}
+\sum_k w_t(k) \eta(k) (l_t \cdot p_t) = \sum_k \eta(k) w_t(k) l_t(k)
+\end{align*}
+And thus 
+\begin{align*}
+	W_{t+1} - W_t = 0
+\end{align*}
+Since we have $w_1(k) = 1$ for all k, $W_1 = K$ so at each time t, $W_t = K$.
+
+\question{11. (d)} Using the two previous questions, we deduce that for all k, we have 
+\begin{equation}
+	\log{K} \geqslant \eta(k) \sum_t (p_t \cdot l_t - l_t(k)) - \eta(k)^2 \sum_t (p_t \cdot l_t - l_t(k))^2
+	\label{eq:question11d}
+\end{equation}
+The right-hand side expression is a concave function on $\eta(k)$, its maximum is reached when its derivative w.r.t $\eta(k)$ is 0, i.e when 
+% TODO : prouver ce fait
+\begin{equation}
+	\eta(k) = \frac{1}{2} \frac{\sum_t (p_t \cdot l_t - l_t(k))}{\sum_t (p_t \cdot l_t - l_t(k))^2} \leqslant \frac{1}{2}
+\end{equation}
+Substituting this expression for $\eta$ in the equation (\ref{eq:question11d}) yields the asked inequality : 
+\begin{align*}
+	\sum_t (p_t \cdot l_t - l_t(k)) \leqslant 2 \sqrt{(\log(K) \sum_t (p_t \cdot l_t - l_t(k))^2 )}
+\end{align*}
+
+\question{12.}

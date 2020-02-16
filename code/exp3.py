@@ -27,5 +27,11 @@ class Exp3(strategy.Strategy):
         # update average loss
         self.update_loss = np.zeros(self.K)
         # use temporal difference
+        """
         self.update_loss[k] = (-1.0 / self.visits[k]) * (loss - self.sums[k])
         self.p = util.EWA_update(self.p, self.update_loss, self.eta)
+        """
+        # cf http://www.spadro.eu/sites/default/files/SebastienG.pdf
+        self.update_loss[k] = loss / self.p[k]
+        self.p = util.EWA_update(self.p, self.update_loss, self.eta)
+        

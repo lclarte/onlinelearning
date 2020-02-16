@@ -5,7 +5,15 @@ import numpy as np
 
 # question 2.a : tirer un entier 0 <= i < M-1 a partir de p \in \Delta_M
 # pour avoir une fonction en une ligne, on ne verifie pas la validite de p
-rand_weighted = lambda p : np.argwhere(np.cumsum(p) > np.random.rand())[0, 0]
+def rand_weighted(p):
+	value = 0.
+	try:
+		value = np.argwhere(np.cumsum(p) > np.random.rand())[0, 0]
+	except Exception as e:
+		print(e)
+		print(np.cumsum(p))
+		input()
+	return value
 
 # question 2.b : met a jour le vecteur des poids p avec la loss l (information
 # complete ) et le learning rate eta

@@ -6,6 +6,7 @@ def pltdecorator(function):
 		retour = function(*args)
 		if 'title' in kwargs:
 			plt.title(kwargs['title'])
+		plt.legend()
 		plt.tight_layout()
 		plt.show()
 		return retour
@@ -34,7 +35,7 @@ def plot_average_loss(average_loss):
 	"""
 	K, T = average_loss.shape
 	for k in range(K):
-		plt.plot(np.linspace(1, T, T), average_loss[k])
+		plt.plot(np.linspace(1, T, T), average_loss[k], label = str(k))
 	plt.title('Average loss as a function of t')
 	plt.xlabel('t')
 	plt.ylabel('$\\bar{l_t}$')
@@ -46,7 +47,7 @@ def plot_cumulative_regret(cumulative_regrets):
 	"""
 	K, T = cumulative_regrets.shape
 	for k in range(K):
-		plt.plot(np.linspace(1, T, T), cumulative_regrets[k])
+		plt.plot(np.linspace(1, T, T), cumulative_regrets[k], label=str(k))
 	plt.title('Cumulative regret')
 	plt.xlabel('t')
 	plt.ylabel('$\\bar{R_t}$')
@@ -76,6 +77,9 @@ def plot_regret_eta(etas, regrets):
 	"""
 	Compare the regret at time T w/ different learning rates
 	"""
+	plt.title("Regret $R_T$ as a function of the learning rate $\\eta$")
+	plt.xlabel("$\\eta$")
+	plt.ylabel("Regret $R_T$")
 	plt.plot(etas, regrets)
 	
 

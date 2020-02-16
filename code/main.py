@@ -10,15 +10,16 @@ from plot import *
 from ewa import EWA
 from exp3 import Exp3
 
-def staticopponent(player_strat_factory : callable, N : int, _plot = True):
+def run_simulation(player_strat_factory : callable, opponent_strat_factory : callable, N : int, _plot = True):
     """
-    player_strat_factory : function to create the same strategy at each iteration w/ diff learning rate 
+    player_strat_factory : function to create the same strategy at each iteration
+    Here, opponent strategy is fixed and hardcoded 
     """
     pL = np.array([[0.0, 1.0, -1.0], [-1.0, 0.0, 1.0], [1.0, -1.0, 0.0]])
     # zero sum game
     oL = -1 * pL
 
-    T = 500
+    T = 1000
 
     losses = np.zeros((N, T))
     regrets = np.zeros((N, T))
@@ -27,9 +28,11 @@ def staticopponent(player_strat_factory : callable, N : int, _plot = True):
         main_simulation = Simulation(pL, oL, T = T)
         
         player, opponent = Actor(True), Actor(False)
-        player.set_strategy(player_strat_factory(1.0))
-        q_init = np.array((0.5, 0.25, 0.25))
-        opponent.set_strategy(EWA(q_init, eta = 0.0))
+        
+        player.set_strategy(player_strat_factory())
+
+        # opponent's strategy
+        opponent.set_strategy(opponent_strat_factory())
 
         main_simulation.set_player(player)
         main_simulation.set_opponent(opponent)
@@ -47,6 +50,7 @@ def staticopponent(player_strat_factory : callable, N : int, _plot = True):
 
 def compareetas(strat_factory : callable):
     """
+    opponent has a fixed strategy = (0.5, 0.25, 0.25)
     la fonction strat_factory doit etre parametrisee par eta
     """
     pL = np.array([[0.0, 1.0, -1.0], [-1.0, 0.0, 1.0], [1.0, -1.0, 0.0]])
@@ -72,15 +76,31 @@ def compareetas(strat_factory : callable):
     
     plot_regret_eta(etas, regrets)
 
-
+# question 6 : player uses Exp3 strategy w/ static opponent
 def question6():
+    print("Question 6 : player uses Exp3, fixed opponent")
     p_init = np.ones(3) / 3.
-    s1 = lambda eta : Exp3(p_init, eta = eta)
-    staticopponent(s1, 10)
-    compareetas(s1)
+    s1 = lambda : Exp3(p_init, eta = 1.0)
+    s1eta = lambda eta : Exp3(p_init, eta = eta)
+
+    q_init = np.array((0.5, 0.25, 0.25))
+    s2 = lambda : EWA(q_init, eta = 0.0)
+    
+    run_simulation(s1, s2, 10)
+    compareetas(s1eta)
+
+def question7():
+    print("Question 7 : opponent plays w/ EWA")
+    p_init = np.ones(3) / 3.
+    # Exp3, eta = 1.0
+    s1 = lambda : Exp3(p_init, eta = 1.0)
+    # EWA, eta = 0.05
+    s2 = lambda : Exp3(p_init, eta = 1.0)
+    run_simulation(s1, s2, 10)
 
 def main():
     question6()
+    question7()
 
 if __name__ == '__main__':
     main()

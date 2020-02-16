@@ -71,7 +71,7 @@ In this question, the player still uses \texttt{EWA} with a learning rate $\eta 
 When the adversary uses \texttt{EWA} like the player, we observe that the average loss seems to converge towards 0 which is the value of the game.
 
 \begin{figure}
-	\includegraphics[width=\textwidth]{images/question4a}
+	\includegraphics[width=10cm]{images/question4a}
 	\caption{Average loss for n = 10 simulations with adaptive adversary}
 	\label{fig:question4a}
 \end{figure}
@@ -92,10 +92,23 @@ When the adversary uses \texttt{EWA} like the player, we observe that the averag
 \end{equation}
 where $\hat{l_t}(i)$ is the \textit{estimated loss} of the action i, i.e the average loss incured by the player when the action i was selected.
 
-\question{5.(a)} To implement the function \texttt{estimated\_loss}, we maintain a vector $C \in \mathbb{N}^M$ where at each time, $C_i$ is the number of times the action $i$ has been played. We also maintain the vector $S \in \mathbb{R}^M$ where $S_i = \sum_i L(i_t, j_t) \mathbf{1}(i_t = i)$ is the sum of the losses occured by the player every time they chose the action $i$.
-The function \texttt{estimated\_loss(i)} simply returns $S_i / C_i$.
+\question{5.(a)} To implement the function \texttt{estimated\_loss}, we maintain a vector $N_t \in \mathbb{N}^M$ where for each t, $N_t(i)$ is the number of times the action $i$ has been played until t. We also maintain the vector $S_t \in \mathbb{R}^M$ where $S_t(i) = \sum_t L(i_t, j_t) \mathbf{1}(i_t = i)$ is the sum of the losses incured by the player every time they chose the action $i$.
+The function \texttt{estimated\_loss(i)} simply returns $\hat{l}_t(k) = S_t(k) / N_t(k)$.
 
- % TODO :redaction explication de l'algorithme
-\question{5. (b)} 
+\question{5. (b)} In the function \texttt{EXP3\_update}, we compute the weights vector $p_{t+1}$ given the weight vector 
+$$
+p_t = \frac{\exp{- \eta \hat{l}_t(k)}}{\sum_j \exp{- \eta \hat{l}_t(k)}}
+$$
+and the loss $L(i_t, j_t)$. To do this, we use the fact that for k such that $i_t = k$, we have 
+$$
+\hat{l}_{t+1}(k) = \hat{l}_{t}(k) + \frac{1}{t+1}(L(i_t, j_t) - \hat{l}_t)
+$$
+We thus define a vector $q(k) = \mathbf{1}(k = i_t)\frac{1}{t+1}(L(i_t, j_t) - \hat{l}_t)$ and use the following identity to compute $p_{t+1}$ :
+\begin{align*}
+	p_{t+1}(k) = \frac{p_t(k) \cdot \exp{(- \eta q(k))}}{\sum_l p_t(l) \cdot \exp{(- \eta q(l))}}
+\end{align*}
+In essence, we do the same operation as the function \texttt{EWA\_update} but here we use the vector $q$ instead of the complete loss $l_t$.
 
 \question{6.} In this question, the player uses \texttt{Exp3} with a learning rate $\eta = 1.0$ with a fixed adversary.
+
+\question{7.} In this question, the opponent uses a strategy \texttt{EWA} with learning rate 0.05. 

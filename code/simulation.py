@@ -64,10 +64,13 @@ class Simulation:
     # update losses w.r.t last actions played
 
     def update(self):
+        # each player computes its loss and updates its strategy
         for _actor in ['player', 'opponent']:
             actor = self.actors[_actor]
             loss = None
 
+            # loss depends on bandit or complete information
+            # (will either be real number or vector)
             if actor.complete_info:
                 loss = self.get_complete_loss(_actor) 
             else:

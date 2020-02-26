@@ -2,13 +2,40 @@
 # main file
 
 import numpy as np
+import pandas as pd
 
 from simulation import *
 from actor import *
 from strategy import *
 from plot import *
+from forecaster import *
 from ewa import EWA
-from exp3 import Exp3
+from exp3 import Exp3, Exp3IX
+
+p_init = np.ones(3) / 3.
+q_init = np.array((0.5, 0.25, 0.25))
+
+# T = 100
+eta1 = np.sqrt(2 * np.log(4) / (100 * 3))
+
+config_question6 = {
+    
+    'player_strat_factory' : lambda : Exp3(p_init, eta = 1.0),
+    'opponent_strat_factory' : lambda : EWA(q_init, eta = 0.0),
+    'player_strat_eta_comparison' : lambda eta : Exp3(p_init, eta = eta)
+}
+
+config_question7 = {
+    'player_strat_factory' : lambda : Exp3(p_init, eta = 1.0),
+    'opponent_strat_factory' : lambda : EWA(p_init, eta = 0.05),
+    'player_strat_eta_comparison' : lambda eta : Exp3(p_init, eta = eta)
+}
+
+config_question6Exp3IX = {
+    'player_strat_factory' : lambda : Exp3IX(p_init, eta = eta1, gamma = eta1 / 2),
+    'opponent_strat_factory' : lambda : EWA(q_init, eta = 0.0),
+    'player_strat_eta_comparison' : lambda eta : Exp3IX(p_init, eta = eta, gamma = eta / 2)
+}
 
 def run_simulation(player_strat_factory : callable, opponent_strat_factory : callable, N : int, _plot = True):
     """
@@ -19,7 +46,7 @@ def run_simulation(player_strat_factory : callable, opponent_strat_factory : cal
     # zero sum game
     oL = -1 * pL
 
-    T = 1000
+    T = 100
 
     losses = np.zeros((N, T))
     regrets = np.zeros((N, T))
@@ -46,6 +73,7 @@ def run_simulation(player_strat_factory : callable, opponent_strat_factory : cal
     if _plot:
         plot_cumulative_regret(regrets)
         plot_average_loss(losses)
+        plot_avg_losses_std(losses, player_strat_factory().__class__.__name__)
         plot_min_max_avg_losses(losses)
 
 def compareetas(strat_factory : callable):
@@ -76,31 +104,33 @@ def compareetas(strat_factory : callable):
     
     plot_regret_eta(etas, regrets)
 
-# question 6 : player uses Exp3 strategy w/ static opponent
-def question6():
-    print("Question 6 : player uses Exp3, fixed opponent")
-    p_init = np.ones(3) / 3.
-    s1 = lambda : Exp3(p_init, eta = 1.0)
-    s1eta = lambda eta : Exp3(p_init, eta = eta)
+def run_config(config):
+    run_simulation(config['player_strat_factory'], config['opponent_strat_factory'], 10)
+    compareetas(config['player_strat_eta_comparison'])
 
-    q_init = np.array((0.5, 0.25, 0.25))
-    s2 = lambda : EWA(q_init, eta = 0.0)
-    
-    run_simulation(s1, s2, 10)
-    compareetas(s1eta)
+def run_forecaster():
+    ids_file = 'data/ideas_dataset/ideas_id.csv'
+    votes_file = 'data/ideas_dataset/ideas_votes.csv'
+    ids_data = pd.read_csv(ids_file)
+    votes_data = pd.read_csv(votes_file)
+    ids_data = np.array(ids_data.loc[:, 'idea.id'])
+    votes_data = np.array(votes_data.loc[:, ['z1', 'z2', 'y']])
+    # offset all ids and votes by 1 (begin at 0 now)
+    ids_data -= 1
+    votes_data[:, 0] -= 1
+    votes_data[:, 1] -= 1
 
-def question7():
-    print("Question 7 : opponent plays w/ EWA")
-    p_init = np.ones(3) / 3.
-    # Exp3, eta = 1.0
-    s1 = lambda : Exp3(p_init, eta = 1.0)
-    # EWA, eta = 0.05
-    s2 = lambda : Exp3(p_init, eta = 1.0)
-    run_simulation(s1, s2, 10)
+    forecaster = Forecaster(ids_data, votes_data)
+    for t in range(len(ids_data)):
+        forecaster.play(t)
+    p = forecaster.player.get_strategy().p
+    correct, loss = forecaster.test() 
+    print(float(correct) / forecaster.T)
 
 def main():
-    question6()
-    question7()
+    # run_config(config_question6Exp3IX)
+    # run_config(config_question7)
+    run_forecaster()
 
 if __name__ == '__main__':
     main()

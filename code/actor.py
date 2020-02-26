@@ -13,8 +13,8 @@ class Actor:
         # True if loss is w/ complete information
         self.complete_info = self.strategy.complete_info
 
-    def set_simulation(self, simulation):
-        self.simulation = simulation
+    def get_strategy(self):
+        return self.strategy
 
     def play(self):
         # return self.strategy.rand_weight()

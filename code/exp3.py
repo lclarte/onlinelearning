@@ -12,26 +12,36 @@ class Exp3(strategy.Strategy):
         self.eta = eta
         self.K = len(p)
         # sum of loss + number of time we visit the arms
-        self.sums, self.visits = np.zeros(self.K), np.zeros(self.K)
         self.last_action = None
 
     def sample(self):
         self.last_action = super().sample()
-        self.visits[self.last_action] += 1.0
         return self.last_action
 
     @strategy.update
     def update(self, loss):
         k = self.last_action
-        self.sums[k] = self.sums[k] + loss
-        # update average loss
-        self.update_loss = np.zeros(self.K)
-        # use temporal difference
-        """
-        self.update_loss[k] = (-1.0 / self.visits[k]) * (loss - self.sums[k])
-        self.p = util.EWA_update(self.p, self.update_loss, self.eta)
-        """
         # cf http://www.spadro.eu/sites/default/files/SebastienG.pdf
+        self.update_loss = np.zeros(self.K)
         self.update_loss[k] = loss / self.p[k]
+        # cf site : https://banditalgs.com/2016/10/01/adversarial-bandits/
         self.p = util.EWA_update(self.p, self.update_loss, self.eta)
+
+class Exp3IX(Exp3):
+    """
+    Exp3 with variance reduction. Remark : optimal parameters are 
+    eta = eta1 = sqrt(2 * log(K+1) / (nk))
+    and gamma = eta1 / 2
+    """
+
+    def __init__(self, p : np.ndarray, eta : float, gamma : float):
+        super().__init__(p, eta)
+        self.gamma = gamma
+
+    @strategy.update
+    def update(self, loss):
+        k = self.last_action
+        self.update_loss = np.zeros(self.K)
+        self.update_loss[k] = loss / (self.p[k] + self.gamma)
+        self.p = util.EWA_update(self.p, self.update_loss, self.eta) 
         

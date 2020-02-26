@@ -6,7 +6,7 @@
 import numpy as np
 import util
 
-# decorator for update function 
+# decorator for update function : adds current weights to weights history
 def update(f):
     def inner(self, loss):
         result = f(self, loss)
@@ -22,6 +22,9 @@ class Strategy:
         self.complete_info = complete_info
         # history of strategies 
         self.ps = [self.p]
+
+    def get_p(self):
+        return self.p
 
     def sample(self):
         # in all strategies used here, we sample an action by playing randomly

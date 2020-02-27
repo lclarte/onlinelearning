@@ -1,4 +1,4 @@
-# strategy.py
+
 # classes representant les algos (UCB, Exp3, etc.) qui ont tous une interface commune 
 # sample() pour jouer un coup 
 # update() pour recuperer les informations de la simulation et MAJ les infos de la strat
@@ -22,6 +22,8 @@ class Strategy:
         self.complete_info = complete_info
         # history of strategies 
         self.ps = [self.p]
+        # boolean if the strategy requires loss or its gradient
+        self.b_gradient_loss = False
 
     def get_p(self):
         return self.p

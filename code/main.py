@@ -128,9 +128,9 @@ def run_forecaster():
     print(float(correct) / forecaster.T)
 
 def main():
-    # run_config(config_question6Exp3IX)
+    run_config(config_question6Exp3IX)
     # run_config(config_question7)
-    run_forecaster()
+    # run_forecaster()
 
 if __name__ == '__main__':
     main()

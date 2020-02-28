@@ -24,6 +24,7 @@ class Strategy:
         self.ps = [self.p]
         # boolean if the strategy requires loss or its gradient
         self.b_gradient_loss = False
+        self.b_require_minloss = False
 
     def get_p(self):
         return self.p

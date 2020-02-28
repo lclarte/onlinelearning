@@ -17,6 +17,7 @@ class Simulation:
         # les deux matrices doivent donc etre specifiees)
 
         self.loss_matrices = {'player' : pL, 'opponent' : oL}
+        self.minlosses = {'player' : np.min(pL), 'opponent' : np.min(oL)}
 
         self.actors = {'player' : None, 'opponent' : None}
         self.actions = {'player' : [], 'opponent' : []}
@@ -75,6 +76,10 @@ class Simulation:
                 loss = self.get_complete_loss(_actor) 
             else:
                 loss = self.get_bandit_loss(_actor)
+            # if min loss has to be 0 (e.g with Exp3)
+            if actor.strategy.b_require_minloss:
+                loss -= self.minlosses[_actor]
+
             self.losses[_actor].append(loss)
             
             self.bandit_losses[_actor].append(self.get_bandit_loss(_actor))

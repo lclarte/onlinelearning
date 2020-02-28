@@ -15,7 +15,7 @@ class EWA(strategy.Strategy):
         @strategy.update
         def update(self, loss):
             self.p = util.EWA_update(self.p, loss, self.eta)
-
+            
         def upper_bound_regret(self, eta, T, K):
             """
             Plots the upper bound for the regret for EWA with fixed adversary

@@ -6,9 +6,11 @@ import util
 
 import numpy as np
 
-class Exp3(strategy.Strategy):
+"""
+Both strategies require losses to be positive
+"""
 
-    __name__ = "EXP3" 
+class Exp3(strategy.Strategy):
     
     def __init__(self, p : np.ndarray, eta : float):
         super().__init__(p, complete_info=False)
@@ -40,8 +42,6 @@ class Exp3IX(Exp3):
     eta = eta1 = sqrt(2 * log(K+1) / (nk))
     and gamma = eta1 / 2
     """
-
-    __name__  = "EXP3-IX"
 
     def __init__(self, p : np.ndarray, eta : float, gamma : float):
         super().__init__(p, eta)

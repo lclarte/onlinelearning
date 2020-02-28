@@ -19,6 +19,8 @@ q_init = np.array((0.5, 0.25, 0.25))
 # T = 100
 eta1 = np.sqrt(2 * np.log(4) / (100 * 3))
 
+RPS_loss_matrix = np.array([[0.0, 1.0, -1.], [-1., 0., 1.], [1., -1., 0.]])
+
 config_question3 = {
 
     'player_strat_factory' : lambda :  EWA(p_init, eta = 1.0),
@@ -58,8 +60,6 @@ config_question6Exp3IX = {
     'opponent_strat_factory' : lambda : EWA(q_init, eta = 0.0),
     'player_strat_eta_comparison' : lambda eta : Exp3IX(p_init, eta = eta, gamma = eta / 2)
 }
-
-RPS_loss_matrix = np.array([[0.0, 1.0, -1.], [-1., 0., 1.], [1., -1., 0.]])
 
 def run_simulation(player_strat_factory : callable, opponent_strat_factory : callable, N : int, _plot = True):
     """
@@ -163,7 +163,7 @@ def run_simulation2(player_strat_factory : callable, opponent_strat_factory : ca
         
         player.set_strategy(player_strat_factory())
 
-        uethod = player_strat_factory().__class__.__name__
+        method = player_strat_factory().__class__.__name__
         # opponent's strategy
         opponent.set_strategy(opponent_strat_factory())
 
@@ -187,23 +187,34 @@ def run_simulation2(player_strat_factory : callable, opponent_strat_factory : ca
 def run_adaptive(config):
     run_simulation2(config['player_strat_factory'], config['opponent_strat_factory'], 10)
 
-def run_forecaster():
+def run_forecaster(config):
+    
+    # data loading and cleaning
+
     ids_file = 'data/ideas_dataset/ideas_id.csv'
     votes_file = 'data/ideas_dataset/ideas_votes.csv'
     ids_data = pd.read_csv(ids_file)
     votes_data = pd.read_csv(votes_file)
     ids_data = np.array(ids_data.loc[:, 'idea.id'])
+    N = len(ids_data)
     votes_data = np.array(votes_data.loc[:, ['z1', 'z2', 'y']])
     # offset all ids and votes by 1 (begin at 0 now)
     ids_data -= 1
     votes_data[:, 0] -= 1
     votes_data[:, 1] -= 1
 
-    forecaster = Forecaster(ids_data, votes_data)
+    eta = 1.0
+    p_init = np.random.uniform(size=2*N)
+    p_init /= np.sum(p_init)
+
+    strat_factory = lambda : EWA(p_init, eta)
+    strat_factory = lambda : OGD(p_init, eta)
+
+    forecaster = Forecaster(ids_data, votes_data, strat_factory)
     for t in range(len(ids_data)):
         forecaster.play(t)
     p = forecaster.player.get_strategy().p
-    correct, loss = forecaster.test() 
+    correct, _ = forecaster.test() 
     print(float(correct) / forecaster.T)
 
 def main():
@@ -212,8 +223,9 @@ def main():
     parser.add_argument('config_file')
     args = parser.parse_args()
     fonctions = {'fixed'   : run_fixed,
-                 'adaptive': run_adaptive
-                }
+                 'adaptive': run_adaptive,
+                 'forecaster' : run_forecaster
+                 }
     configs = {'question4' : config_question4,
                 'question3' : config_question3,
                'question6' : config_question6,

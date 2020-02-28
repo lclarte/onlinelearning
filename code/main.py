@@ -147,7 +147,7 @@ def run_simulation2(player_strat_factory : callable, opponent_strat_factory : ca
     oL = -1 * pL
 
     T = 100
-    Tprime = 100000
+    Tprime = int(1e4) 
 
     losses = np.zeros((N, T))
     # plot only one evolution of weights

@@ -23,6 +23,8 @@ class Forecaster:
         self.loss_grad = lambda y_true, y_hat : (1 - 2 * y_true)
         self.player = None
         self.strat_factory = strat_factory
+        self.loss_history = []
+        self.correct_history = []
         self.init(strat_factory)
 
     def init(self, strat_factory):
@@ -41,8 +43,9 @@ class Forecaster:
         Return win probability of choice 1 given ids of the 2 choices
         """
         p_t = self.player.get_strategy().p
-        return (p_t[z_1] + p_t[z_2 + self.N]) # \
-                # / (p_t[z_1] + p_t[z_1 + self.N] + p_t[z_2] + p_t[z_2 + self.N])
+        # normalize probability among active experts
+        return (p_t[z_1] + p_t[z_2 + self.N]) \
+                / (p_t[z_1] + p_t[z_1 + self.N] + p_t[z_2] + p_t[z_2 + self.N])
 
     def play(self, t):
         """
@@ -53,7 +56,10 @@ class Forecaster:
         self.current_loss_grad = np.vectorize(lambda y : self.loss_grad(result, y))
         
         f_t = self.strategies(z_1, z_2, 0.0)
-        hat_y = self.predict(z_1, z_2 )
+        hat_y = self.predict(z_1, z_2)
+        prediction = 1.0 if (hat_y > 0.5) else 0.0
+        self.correct_history.append(int(prediction == result))
+        self.loss_history.append(self.loss(result, hat_y))
         # sleeping trick : change strategy to hat_y
         f_t = self.strategies(z_1, z_2, hat_y)
         loss = self.current_loss(f_t)

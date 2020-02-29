@@ -112,3 +112,32 @@ def plot_average_p_distance(ps : np.ndarray, p_star : np.ndarray, method : str =
         plt.title("Distance between average weights $\\bar{p}_t$ and " + str(p_star_print) + ". Algorithm : " + method)
         plt.xlabel("t")
         plt.ylabel("$ \| \\bar{p}_t - " + str(p_star_print) + "\|_2$")
+
+@pltdecorator
+def plot_loss_eta(etas : list, losses_history : np.ndarray):
+        cumlosses = np.cumsum(losses_history, axis=1)
+        for i in range(len(etas)):
+                eta = etas[i]
+                plt.plot(cumlosses[i], label='eta = ' + str(eta))
+        plt.legend()
+        plt.title('Cumulative loss as a function of $\eta$')
+
+@pltdecorator
+def plot_average_expected_loss(etas : list, losses_history : np.ndarray, file : str = ""):
+        T = len(losses_history[0])
+        avglosses = np.cumsum(losses_history, axis=1) / np.arange(1, T + 1)
+        for i in range(len(etas)):
+                eta = etas[i]
+                plt.plot(avglosses[i], label='eta = ' + str(eta))
+        plt.legend()
+        plt.title('Average expected loss as a function of $\eta$. Dataset : ' + file)
+
+@pltdecorator
+def plot_average_precision(etas : list, correct_history : np.ndarray, file : str = ""):
+        T = len(correct_history[0])
+        avglosses = np.cumsum(correct_history, axis=1) / np.arange(1, T + 1)
+        for i in range(len(etas)):
+                eta = etas[i]
+                plt.plot(avglosses[i], label='eta = ' + str(eta))
+        plt.legend()
+        plt.title('Average precision as a function of $\eta$. Dataset : ' + file)

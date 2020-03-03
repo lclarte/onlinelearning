@@ -1,3 +1,4 @@
+import math
 import numpy as np
 from pandas import read_csv
 
@@ -44,8 +45,11 @@ class Forecaster:
         """
         p_t = self.player.get_strategy().p
         # normalize probability among active experts
-        return (p_t[z_1] + p_t[z_2 + self.N]) \
+        hat_y =  (p_t[z_1] + p_t[z_2 + self.N]) \
                 / (p_t[z_1] + p_t[z_1 + self.N] + p_t[z_2] + p_t[z_2 + self.N])
+        if math.isnan(hat_y):
+            return 0.5
+        return hat_y
 
     def play(self, t):
         """
@@ -53,7 +57,6 @@ class Forecaster:
         """
         z_1, z_2, result = self.votes[t]
         self.current_loss = np.vectorize(lambda y : self.loss(result, y))
-        self.current_loss_grad = np.vectorize(lambda y : self.loss_grad(result, y))
         
         f_t = self.strategies(z_1, z_2, 0.0)
         hat_y = self.predict(z_1, z_2)
@@ -63,13 +66,14 @@ class Forecaster:
         # sleeping trick : change strategy to hat_y
         f_t = self.strategies(z_1, z_2, hat_y)
         loss = self.current_loss(f_t)
-        gradient_loss = self.current_loss_grad(f_t)
+        gradient_loss = (1 - 2 * result) * f_t
 
         if not self.player.strategy.b_gradient_loss:
+            # here, loss = loss(p_t) 
             self.player.update(loss)
         else:
+            # compute gradient loss w.r.t the vector p_t
             self.player.update(gradient_loss)
-
     def test(self):
         """
         Compute precision and loss on all test

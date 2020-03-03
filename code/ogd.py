@@ -6,18 +6,26 @@ import numpy as np
 import strategy 
 
 class OGD(strategy.Strategy):
+
+    __name__ = 'OGD'
+
     def __init__(self, p, eta): 
         super().__init__(p, complete_info = True)
         self.b_gradient_loss = True
         self.eta = eta
 
-    def project_simplex(self, v, z=1):
+    def project_simplex(self, v, z=1.):
         n_features = v.shape[0]
+        # sort in reverse order
         u = np.sort(v)[::-1]
         cssv = np.cumsum(u) - z
         ind = np.arange(n_features) + 1
         cond = u - cssv / ind > 0
-        rho = ind[cond][-1]
+        try:
+            rho = ind[cond][-1]
+        except Exception as e:
+            print(self.loss_gradient)
+            raise Exception()
         theta = cssv[cond][-1] / float(rho)
         w = np.maximum(v - theta, 0)
         return w
@@ -42,7 +50,7 @@ class OGD(strategy.Strategy):
     @strategy.update
     def update(self, loss_gradient):
         # gradient descent 
-        before = self.p
+        self.loss_gradient = loss_gradient
         self.p = self.p - self.eta * loss_gradient
         # project updated weights on simplex
         self.p =  self.project_simplex(self.p)
